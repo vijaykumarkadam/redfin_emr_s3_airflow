@@ -1,6 +1,6 @@
 from airflow import DAG
 from datetime import timedelta, datetime
-from airflow.operators.dummy_operator import DummyOperator
+from airflow.operators.empty import EmptyOperator
 import boto3
 from airflow.providers.amazon.aws.operators.emr import (
     EmrCreateJobFlowOperator, 
@@ -88,7 +88,7 @@ with DAG('redfin_analytics_spark_job_dag',
         # schedule_interval = '@weekly',
         catchup=False) as dag:
 
-        start_pipeline = DummyOperator(task_id="tsk_start_pipeline")
+        start_pipeline = EmptyOperator(task_id="tsk_start_pipeline")
 
          # Create an EMR cluster
         create_emr_cluster = EmrCreateJobFlowOperator(
@@ -156,7 +156,7 @@ with DAG('redfin_analytics_spark_job_dag',
         mode='poke',
         )
 
-        end_pipeline = DummyOperator(task_id="tsk_end_pipeline")
+        end_pipeline = EmptyOperator(task_id="tsk_end_pipeline")
 
 
         start_pipeline >> create_emr_cluster >> is_emr_cluster_created >> add_extraction_step >> is_extraction_completed
